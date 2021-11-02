@@ -84,9 +84,9 @@ int main(){
     cin >> size;
     cout << "Количество литров краски на 1 квадратный метр: ";
     cin >> countPaint;
-    cout << "Цвет краски: " << colorTypes.Out();
+    cout << "Цвет краски" << colorTypes.Out() << ": ";
     cin >> color;
-    cout << "Чем будете красить: " << type.Out();
+    cout << "Чем будете красить" << type.Out() << ": ";
     cin >> item;
     //Перемножение всех данных
     int ans = size*countPaint*colorTypes(color)*type(item);
