@@ -56,10 +56,34 @@ void MainMenu(int com, vector<paint_item> paints){
     if (com == 2){
         cout << endl << endl;
         paint_item it;
-        double square;
+        string command;
+        double square=0, width, height;
         int layerNumber, paintsChoice;
-        cout << "Введите площадь: ";
-        cin >> square;
+        cout << "Введите + чтобы добавить стену и - чтобы добавить выподающий участок. Для продолжения - 0" << endl;
+        cin >> command;
+        while (command != "0"){
+            if (command == "+"){
+                cout << "Ширина: ";
+                cin >> width;
+                cout << "Высота: ";
+                cin >> height;
+                square += width*height;
+            }
+            else if (command == "-"){
+                cout << "Ширина: ";
+                cin >> width;
+                cout << "Высота: ";
+                cin >> height;
+                square -= width*height;
+                if (square < 0)
+                    square = 0;
+            }
+            else{
+                cout << "Такой команды не существует" << endl;
+            }
+            cin >> command;
+        }
+        cout << endl << endl;
         for (int i=0; i<paints.size(); i++){
             cout << i+1 << ") Цвет " << paints[i].color << " Цена - " << (paints[i].type+1)*paints[i].price << " ";
         }
