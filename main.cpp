@@ -16,6 +16,41 @@ struct paint_item {
 double coloring_cost(double square, int typeCost, int colorCost, int layerNumber){
     return square*colorCost*layerNumber;
 }
+double WallSquare(){
+    string command;
+    double width, height, square;
+    cout << "Введите + чтобы добавить стену и - чтобы добавить выподающий участок. Для продолжения - 0" << endl;
+    cin >> command;
+    //Цикл вводящий стены и считающий их общую площадь
+    while (command != "0"){
+        //Добавление стены
+        if (command == "+"){
+            cout << "Ширина: ";
+            cin >> width;
+            cout << "Высота: ";
+            cin >> height;
+            //Увеличение площади
+            square += width*height;
+        }
+        //Вычитание выступающего участка
+        else if (command == "-"){
+            cout << "Ширина: ";
+            cin >> width;
+            cout << "Высота: ";
+            cin >> height;
+            //Вычитание стены
+            square -= width*height;
+            //Если площадь меньше 0 то установить площадь равной нулю
+            if (square < 0)
+                square = 0;
+        }
+        //Если не удалось распознать команду сообщить об ошибке
+        else cout << "Такой команды не существует" << endl;
+        //Ввод новой команды
+        cin >> command;
+    }
+    return square;
+}
 //Расчёт количества банок
 int package_optional(double volumePackage, double volume){
     return int(volume/volumePackage)+(volume-(volumePackage*int(volume/volumePackage))==0?0:1);
@@ -52,129 +87,67 @@ void budget_options(double square, int budget, vector<paint_item> paints){
     else
         cout << "Невозможно покрасить - недостаточно средств" << endl;
 }
-//Главное меню
-void MainMenu(int com, vector<paint_item> paints){
-    //Команда 1 - вывод всех видов красок и их цены
-    if (com == 1){
-        //Пустые строки - разделители
-        cout << endl << endl;
-        cout << "Все виды красок: " << endl << endl;
-        //Цикл выводящий все виды красок
-        for (int i=0; i<paints.size(); i++){
-            cout << "Цвет - " << paints[i].color << ", сорт - " << (paints[i].type?"высший":"стандартный")
-            << ", цена - " << paints[i].price << ", объём банки - " << paints[i].volume << endl;
-        }
-        //Пустые строки - разделители
-        cout << endl << endl;
+//Вывод красок
+void PaintsOut(vector<paint_item> paints){
+    //Пустые строки - разделители
+    for (int i=0; i<paints.size(); i++){
+        if (paints[i].type == 1)
+            cout << "    Цвет - " << paints[i].color << ", цена - " << paints[i].price << " руб, объём банки - " << paints[i].volume << endl;
     }
-    //Режим 2 - подсчёт стоимости красок
-    if (com == 2){
-        //Пустые строки - разделители
-        cout << endl << endl;
-        //Переменные
-        paint_item it;
-        string command;
-        double square=0, width, height;
-        int layerNumber, paintsChoice;
-        cout << "Введите + чтобы добавить стену и - чтобы добавить выподающий участок. Для продолжения - 0" << endl;
-        cin >> command;
-        //Цикл вводящий стены и считающий их общую площадь
-        while (command != "0"){
-            //Добавление стены
-            if (command == "+"){
-                cout << "Ширина: ";
-                cin >> width;
-                cout << "Высота: ";
-                cin >> height;
-                //Увеличение площади
-                square += width*height;
-            }
-            //Вычитание выступающего участка
-            else if (command == "-"){
-                cout << "Ширина: ";
-                cin >> width;
-                cout << "Высота: ";
-                cin >> height;
-                //Вычитание стены
-                square -= width*height;
-                //Если площадь меньше 0 то установить площадь равной нулю
-                if (square < 0)
-                    square = 0;
-            }
-            //Если не удалось распознать команду сообщить об ошибке
-            else{
-                cout << "Такой команды не существует" << endl;
-            }
-            //Ввод новой команды
-            cin >> command;
-        }
-        //Пустые строки - разделители
-        cout << endl << endl;
-        //Вывод всех видов краски с их номерами
-        for (int i=0; i<paints.size(); i++){
-            cout << i+1 << ") Цвет " << paints[i].color << " сорт - " << (paints[i].type?"высший":"стандартный") << " цена - " << paints[i].price << " ";
-        }
-        //Ввод номера краски
-        cout << endl << "Введите номер краски: ";
-        cin >> paintsChoice;
-        //Установка краски в переменную it
-        it = paints[paintsChoice-1];
-        //Ввод количества слоёв
-        cout << "Введите количество слоёв: ";
-        cin >> layerNumber;
-        //Вывод расчёта стоимости
-        cout << endl << "Стоимость покраски составит - " << coloring_cost(square, it.type, it.price, layerNumber) << " руб.";
-        //Пустые строки - разделители
-        cout << endl << endl << endl;
+    cout << endl << "Краски среднего сорта:" << endl;
+    for (int i=0; i<paints.size(); i++){
+        if (paints[i].type == 0)
+            cout << "    Цвет - " << paints[i].color << ", цена - " << paints[i].price << " руб, объём банки - " << paints[i].volume << endl;
     }
-    //Команта 3 - оптимальная покраска при фиксированном бюджете
-    if (com == 3){
-        //Объявление переменных
-        double width, height, square=0;
-        int budget;
-        string command;
-        //Ввод буджета
-        cout << "Введите свой бюджет: ";
-        cin >> budget;
-        cout << "Введите + чтобы добавить стену и - чтобы добавить выподающий участок. Для продолжения - 0" << endl;
-        cin >> command;
-        //Цикл вводящий стены и считающий их общую площадь
-        while (command != "0"){
-            //Добавление стены
-            if (command == "+"){
-                cout << "Ширина: ";
-                cin >> width;
-                cout << "Высота: ";
-                cin >> height;
-                //Увеличение площади
-                square += width*height;
-            }
-            //Вычитание выступающего участка
-            else if (command == "-"){
-                cout << "Ширина: ";
-                cin >> width;
-                cout << "Высота: ";
-                cin >> height;
-                //Вычитание стены
-                square -= width*height;
-                //Если площадь меньше 0 то установить площадь равной нулю
-                if (square < 0)
-                    square = 0;
-            }
-            //Если не удалось распознать команду сообщить об ошибке
-            else{
-                cout << "Такой команды не существует" << endl;
-            }
-            //Ввод новой команды
-            cin >> command;
-        }
-        //Строки разделители
-        cout << endl << endl;
-        //Вывод оптимальной покраски с помощью функции budget_options
-        budget_options(square, budget, paints);
-        //Строки разделители
-        cout << endl << endl;
+    //Пустые строки - разделители
+    cout << endl << endl;
+}
+//Стоимость покраски
+void PaintingCost(vector<paint_item> paints){
+    //Пустые строки - разделители
+    cout << endl << endl;
+    //Переменные
+    paint_item it;
+    string command;
+    double square=0, width, height;
+    int layerNumber, paintsChoice;
+    square = WallSquare();
+    //Пустые строки - разделители
+    cout << endl << endl;
+    //Вывод всех видов краски с их номерами
+    for (int i=0; i<paints.size(); i++){
+        cout << i+1 << ") Цвет - " << paints[i].color << ", сорт - " << (paints[i].type?"высший":"стандартный")
+        << ", цена - " << paints[i].price << " руб, объём банки - " << paints[i].volume << endl;
     }
+    //Ввод номера краски
+    cout << endl << "Введите номер краски: ";
+    cin >> paintsChoice;
+    //Установка краски в переменную it
+    it = paints[paintsChoice-1];
+    //Ввод количества слоёв
+    cout << "Введите количество слоёв: ";
+    cin >> layerNumber;
+    //Вывод расчёта стоимости
+    cout << endl << "Стоимость покраски составит - " << coloring_cost(square, it.type, it.price, layerNumber) << " руб.";
+    //Пустые строки - разделители
+    cout << endl << endl << endl;
+}
+//Оптимальная покраска при фиксированном бюджете
+void OptimalPainting(vector<paint_item> paints){
+    //Объявление переменных
+    double width, height, square=0;
+    int budget;
+    string command;
+    //Ввод буджета
+    cout << "Введите свой бюджет: ";
+    cin >> budget;
+    square = WallSquare();
+    //Строки разделители
+    cout << endl << endl;
+    //Вывод оптимальной покраски с помощью функции budget_options
+    budget_options(square, budget, paints);
+    //Строки разделители
+    cout << endl << endl;
 }
 
 int main()
@@ -197,7 +170,12 @@ int main()
     cin >> command;
     //Цикл отправляющий команды в фнкцию MainMenu
     while (command != 4){
-        MainMenu(command, paints);
+        switch (command){
+            case 1: PaintsOut(paints); break;
+            case 2: PaintingCost(paints); break;
+            case 3: OptimalPainting(paints); break;
+            default: cout << "Такой команды не существует\n\n"; break;
+        }
         cout << "Введите номер режима(1 - Справочник красок, 2 - Поверхность и стоимость, 3 - Нормы и ограничения, 4 - Выход): ";
         cin >> command;
     }
