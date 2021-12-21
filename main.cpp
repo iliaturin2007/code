@@ -13,8 +13,8 @@ struct paint_item {
 };
 
 //Расчёт стоимости покраски
-double coloring_cost(double square, int typeCost, int colorCost, int layerNumber){
-    return square*colorCost*layerNumber;
+double coloring_cost(double square, int typeCost, int colorCost, int layerCount){
+    return square*colorCost*layerCount;
 }
 double WallSquare(){
     string command;
