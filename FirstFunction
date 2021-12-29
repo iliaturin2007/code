@@ -1,4 +1,4 @@
-int CountNumberBiggerFive(int number){
+int CountNumberLowerFive(int number){
     int count=0;
     while (number>0){
         if (number%10<5)
