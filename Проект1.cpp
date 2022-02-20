@@ -43,9 +43,10 @@ string MonthLabel(int month){
         case 11: return "Ноябрь";
         case 12: return "Декабрь";
     }
+    return "0";
 }
 //Выводит календарь
-int printCalendar(int FirstDay, int month, int year){
+void printCalendar(int FirstDay, int month, int year){
     cout << endl << endl << "====================" << endl << MonthLabel(month) << ", "  << year  << endl << endl;
     cout << "ПН ВТ СР ЧТ ПТ СБ ВС" << endl;
     //Пропускает место перед первым числом
@@ -98,7 +99,7 @@ int ParseUnsignedInt(string valueString){
     return value;
 }
 //Функция общего вывода
-int output(int year, int month){
+void output(int year, int month){
     //Если данные верные то выводим календарь с помощью функции printCalendar
     if (year>=1919 && year<=2029 && month>=1 && month<=12 && month != -1 && year != -1) 
         printCalendar(FirstDayInMonth(month, year), month, year);
@@ -110,6 +111,8 @@ int output(int year, int month){
         cout << endl << "Дата вне диапазона - 01.01.1919 --- 31.12.2029" << endl << endl;
 }
 int main(){
+    //Добавляем русский язык
+    setlocale(LC_ALL, "Russian");
     //Объявоение еременные
     int year=-1, month=-1, i=0;
     string input, yearStr, monthStr;
