@@ -1,0 +1,106 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+
+using namespace std;
+
+bool not_divider_in_vector(vector<int> vec, int number){
+    for (int i=0; i<vec.size(); i++)
+        if (!(number%vec[i]))
+            return false;
+    return true;
+}
+
+vector<int> generate_prime_number(int max_number){
+    vector<int> prime_number;
+    bool flag = true;
+    for (int i = 2; i<=max_number; i++){
+        if (not_divider_in_vector(prime_number, i)){
+            prime_number.push_back(i);
+        }
+    }
+    return prime_number;
+}
+
+vector<int> prime_factors(int number, vector<int> prime_number){
+    vector<int> prime;
+    while (number > 1){
+        for (int i=0; i<prime_number.size(); i++){
+            if (!(number % prime_number[i])){
+                prime.push_back(prime_number[i]);
+                number/=prime_number[i];
+                break;
+            }
+        }
+    }
+    return prime;
+}
+
+int greatest_common_divisor(int a, int b, vector<int> prime_number){
+    vector<int> prime_a = prime_factors(a, prime_number), prime_b = prime_factors(b, prime_number);
+    int NOD = 1;
+    for (int i=0; i < prime_a.size(); i++){
+        for (int j=0; j < prime_b.size(); j++){
+            if (prime_a[i] == prime_b[j]){
+                NOD *= prime_a[i];
+                prime_a.erase(prime_a.begin()+i);
+                prime_b.erase(prime_b.begin()+j);
+                i -= 1;
+                j -= 1;
+            }
+        }
+    }
+    return NOD;
+}
+
+int lowest_common_multiple(int a, int b, vector<int> prime_number){
+    if (a > b)
+        swap(a, b);
+    vector<int> prime_a = prime_factors(a, prime_number), prime_b = prime_factors(b, prime_number);
+    int NOK = b, j;
+    bool flag = true;
+    for (int i=0; i < prime_a.size(); i++){
+        flag = true;
+        for (j=0; j < prime_b.size(); j++){
+            if (prime_a[i] == prime_b[j]){
+                flag = false;
+                prime_a.erase(prime_a.begin()+i);
+                prime_b.erase(prime_b.begin()+j);
+                i -= 1;
+                j -= 1;
+            }
+        }
+        if (flag){
+            NOK *= prime_a[i];
+        }
+    }
+    return NOK;
+}
+
+int perfect_number(int number, vector<int> prime_number){
+    int sum_factors = 1;
+    for (int i=2; i<number; i++){
+        if (!(number%i)){
+            sum_factors += i;
+        }
+    }
+    if (sum_factors == number)
+        return true;
+    return false;
+}
+
+int main(){
+    int a, b;
+    cin >> a >> b;
+    vector<int> prime_number = generate_prime_number(max(a, b)), c;  
+    cout << endl << endl;
+    cout << "Число " << a << (binary_search(prime_number.begin(), prime_number.end(), a) ? "" : " НЕ") << " простое" << endl;
+    cout << "Число " << a << (perfect_number(a, prime_number) ? "" : " НЕ") << " совершенное" << endl;
+    cout << "Число " << b << (binary_search(prime_number.begin(), prime_number.end(), b) ? "" : " НЕ") << " простое" << endl;
+    cout << "Число " << b << (perfect_number(b, prime_number) ? "" : " НЕ") << " совершенное" << endl;
+    cout << "Наибольший общий делитель => " << greatest_common_divisor(a, b, prime_number) <<  endl;
+    cout << "Наименьшее общее кратное => " << lowest_common_multiple(a, b, prime_number) << endl;
+    cout << endl << "=========================";
+    return 0;
+}
