@@ -1,106 +1,105 @@
 #include <iostream>
-#include <vector>
-#include <string>
-#include <algorithm>
+#include <cmath>
+#include <map>
 
 using namespace std;
-
-bool not_divider_in_vector(vector<int> vec, int number){
-    for (int i=0; i<vec.size(); i++)
-        if (!(number%vec[i]))
-            return false;
-    return true;
-}
-
-vector<int> generate_prime_number(int max_number){
-    vector<int> prime_number;
-    bool flag = true;
-    for (int i = 2; i<=max_number; i++){
-        if (not_divider_in_vector(prime_number, i)){
-            prime_number.push_back(i);
-        }
-    }
-    return prime_number;
-}
-
-vector<int> prime_factors(int number, vector<int> prime_number){
-    vector<int> prime;
-    while (number > 1){
-        for (int i=0; i<prime_number.size(); i++){
-            if (!(number % prime_number[i])){
-                prime.push_back(prime_number[i]);
-                number/=prime_number[i];
-                break;
-            }
-        }
-    }
-    return prime;
-}
-
-int greatest_common_divisor(int a, int b, vector<int> prime_number){
-    vector<int> prime_a = prime_factors(a, prime_number), prime_b = prime_factors(b, prime_number);
-    int NOD = 1;
-    for (int i=0; i < prime_a.size(); i++){
-        for (int j=0; j < prime_b.size(); j++){
-            if (prime_a[i] == prime_b[j]){
-                NOD *= prime_a[i];
-                prime_a.erase(prime_a.begin()+i);
-                prime_b.erase(prime_b.begin()+j);
-                i -= 1;
-                j -= 1;
-            }
-        }
-    }
-    return NOD;
-}
-
-int lowest_common_multiple(int a, int b, vector<int> prime_number){
-    if (a > b)
-        swap(a, b);
-    vector<int> prime_a = prime_factors(a, prime_number), prime_b = prime_factors(b, prime_number);
-    int NOK = b, j;
-    bool flag = true;
-    for (int i=0; i < prime_a.size(); i++){
-        flag = true;
-        for (j=0; j < prime_b.size(); j++){
-            if (prime_a[i] == prime_b[j]){
-                flag = false;
-                prime_a.erase(prime_a.begin()+i);
-                prime_b.erase(prime_b.begin()+j);
-                i -= 1;
-                j -= 1;
-            }
-        }
-        if (flag){
-            NOK *= prime_a[i];
-        }
-    }
-    return NOK;
-}
-
-int perfect_number(int number, vector<int> prime_number){
-    int sum_factors = 1;
-    for (int i=2; i<number; i++){
-        if (!(number%i)){
-            sum_factors += i;
-        }
-    }
-    if (sum_factors == number)
-        return true;
-    return false;
-}
-
-int main(){
+int NOD(int, int);
+int NOK (int, int);
+int prostoe_chislo(int n);
+int sovershenoe_chislo (int n);
+struct user_data{
+    int a;
+    int b;
+};
+map <string, user_data> input_number(map<string, user_data> userdata){
     int a, b;
-    cin >> a >> b;
-    vector<int> prime_number = generate_prime_number(max(a, b)), c;  
-    cout << endl << endl;
-    cout << "Число " << a << (binary_search(prime_number.begin(), prime_number.end(), a) ? "" : " НЕ") << " простое" << endl;
-    cout << "Число " << a << (perfect_number(a, prime_number) ? "" : " НЕ") << " совершенное" << endl;
-    cout << "Число " << b << (binary_search(prime_number.begin(), prime_number.end(), b) ? "" : " НЕ") << " простое" << endl;
-    cout << "Число " << b << (perfect_number(b, prime_number) ? "" : " НЕ") << " совершенное" << endl;
-    cout << "Наибольший общий делитель => " << greatest_common_divisor(a, b, prime_number) <<  endl;
-    cout << "Наименьшее общее кратное => " << lowest_common_multiple(a, b, prime_number) << endl;
-    cout << endl << "=========================";
+    string username;
+    cout << "Введите имя пользователя: ";
+    cin >> username;
+    if (userdata.find(username) == userdata.end() || username == ""){
+        cout << "Введите первое число а: ";
+        cin >> a;
+        cout << "Введите второе число b: ";
+        cin >> b;
+        user_data data = {a, b};
+        userdata[username] = data;
+    }
+    else{
+        cout << endl <<  "Данное имя пользователя занято" << endl;
+    }
+    return userdata;
+}
+map <string, user_data> output_number(map<string, user_data> userdata){
+    string username;
+    cout << "Введите имя пользователя: ";
+    cin >> username;
+    if (userdata.find(username) != userdata.end() || username == ""){
+        prostoe_chislo(userdata[username].a);
+        prostoe_chislo(userdata[username].b);
+        sovershenoe_chislo(userdata[username].a);
+        sovershenoe_chislo(userdata[username].b);
+        cout << "NOD = " << NOD(userdata[username].a,userdata[username].b) << endl;
+        cout << "NOK = " << NOK (userdata[username].a,userdata[username].b)<< endl;
+    }
+    else{
+        cout << endl << "Данное имя пользователя не существует" << endl;
+    }
+    return userdata;
+}
+int main()
+{
+    map <string, user_data> users;
+    map <int, map <string, user_data> (*)(map<string, user_data>)> commands;
+    commands[1] = input_number;
+    commands[2] = output_number;
+    int command = -1;
+    while (command != 0){
+        cout << "Введите команду(0-выход, 1-произвести расчёты, 2-вывести результат): ";
+        cin >> command;
+        if (commands.find(command) != commands.end()){
+            cout << endl << endl;
+            users = commands[command](users);
+            cout << endl << endl;
+        }
+    }
     return 0;
 }
+int prostoe_chislo (int n) {
+    int  s=0;
+    if (n > 1) {
+        for (int i = 1; i < n; i++)
+            if (n % i == 0) {
+                 s+=1;
+            }
+            if (s>=2) {
+                 cout << "Число " << n << " => " << "НЕ простое" << endl;
+            } else {
+                 cout << "Число " << n << " => " << "простое" << endl;
+            }
+    }
+}
+int sovershenoe_chislo (int n) {
+int sum=0;
+   for (int i = 1; i < n; i++) {
+        if (n%i == 0) {
+            sum += i;
+        }
+    }
+    if (sum==n){
+        cout << "Число " << n << " => " << "совершенное" << endl;
+    }
+    else{
+        cout << "Число " << n << " => " << "НЕ совершенное" << endl;
+        }
+}
+int NOD(int a1, int a2){// наибольший общий делитель
+    if (a2==0){
+        return a1;
+    }
+    else
+        return NOD(a2,a1%a2);
+}
+int NOK (int a1, int a2) {// наименьшее общее кратное
+    return a1 / NOD(a1, a2) * a2;
+}
+
